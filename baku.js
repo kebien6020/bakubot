@@ -1,5 +1,6 @@
 const Discord = require('discord.js')
 const bot = new Discord.Client()
+
 const fetch = require('isomorphic-fetch')
 
 const { key, appId, ownerId } = require('./config')
@@ -25,7 +26,6 @@ const fetchImages = type => {
 bot.on('ready', () => {
     console.log('Bakubot is f*king ON')
     Object.keys(images).forEach(name => console.log(`Loaded ${images[name].length} ${name} images`))
-    // console.log(JSON.stringify(images, null, 2))
 })
 
 function rnd(min, max) {
@@ -96,6 +96,8 @@ Comandos
         else
             msg.channel.send(`Comando solo disponible para mi creador <@${ownerId}>`)
     }
+    if (msg.content.startsWith('b.id'))
+        msg.channel.send(`Your user id is ${msg.author.id}`)
 })
 
 bot.login(key)
