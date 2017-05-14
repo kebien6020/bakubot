@@ -1,0 +1,20 @@
+{
+  "name": "bakubot",
+  "version": "1.0.0",
+  "description": "A personal discord bot.",
+  "main": "baku.js",
+  "dependencies": {
+    "discord.js": "^11.1.0",
+    "isomorphic-fetch": "^2.2.1"
+  },
+  "devDependencies": {
+    "nodemon": "^1.11.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon baku.js"
+  },
+  "keywords": [],
+  "author": "Bakuhatsu",
+  "license": "MIT"
+}
