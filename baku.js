@@ -7,13 +7,19 @@ const { key, appId, ownerId } = require('./config')
 
 const baseUrl = 'http://bakubot.ddns.net'
 
-const images = {}
+const cache = {
+    images: {
+        'hentai': [],
+        'wallpaper': [],
+        'baka': [],
+    }
+}
 
 const fetchImages = type => {
     fetch(baseUrl + `/images/${type}/files.json`)
         .then(res => res.json())
         .then(data => {
-            images[type] = data.images.map(path => baseUrl + path)
+            cache.images[type] = data.images.map(path => baseUrl + path)
         })
 }
 
@@ -25,7 +31,7 @@ const fetchImages = type => {
 
 bot.on('ready', () => {
     console.log('Bakubot is f*king ON')
-    Object.keys(images).forEach(name => console.log(`Loaded ${images[name].length} ${name} images`))
+    Object.keys(cache.images).forEach(name => console.log(`Loaded ${cache.images[name].length} ${name} images`))
 })
 
 function rnd(min, max) {
@@ -39,22 +45,47 @@ function pickRandom(arr) {
     return arr[index]
 }
 
+const newCommands = [
+    'meme',
+    'hentai'
+]
+
+const commands = {}
+newCommands.forEach(cName => {
+    commands[cName] = require('./commands/' + cName)
+})
+
+function commandName(text) {
+    return text.slice(2).split(' ')[0]
+}
+
+function isNewCommand(text) {
+    const command = commandName(text)
+    return text.startsWith('b.') && newCommands.indexOf(command) !== -1
+}
+
+function parseArgs(text) {
+    return text.split(' ').slice(1)
+}
+
 bot.on('message', msg => {
-    if (msg.content.startsWith('b.hentai')){
-        const imgUrl = pickRandom(images.hentai)
-        if (!msg.channel.nsfw)
-            msg.channel.send('Comando solo disponible en #nsfw')
+    if (isNewCommand(msg.content)) {
+        console.log(commands.meme.name)
+        const command = commands[commandName(msg.content)]
+        const args = parseArgs(msg.content)
+        if (command.nsfw && !msg.channel.nsfw)
+            msg.channel.send('Comando solo disponible en canales nsfw')
         else
-            msg.reply(`Aquí tienes tu hentai\n${imgUrl}`)
+            command.run(msg, args, cache)
     }
 
     if (msg.content.startsWith('b.wallpaper')){
-        const imgUrl = pickRandom(images.wallpaper)
+        const imgUrl = pickRandom(cache.images.wallpaper)
         msg.reply(`Aquí tienes tu wallpaper\n${imgUrl}`)
     }
 
     if (msg.content.startsWith('b.baka')){
-        const imgUrl = pickRandom(images.baka)
+        const imgUrl = pickRandom(cache.images.baka)
         msg.channel.send(`${imgUrl}`)
     }
 
@@ -86,7 +117,7 @@ Comandos
     if (msg.content.startsWith('b.sexi'))
         msg.reply('Es sexy con "y", pero gracias, ya sabía.')
     if (msg.content.startsWith('b.say')) {
-        msg.channel.send(msg.content.slice(6))
+        msg.channel.send(msg.content.slice(6), {tts: true})
         if (msg.deletable) msg.delete()
     }
     if (msg.content.startsWith('b.game')) {
