@@ -47,7 +47,8 @@ function pickRandom(arr) {
 
 const newCommands = [
     'meme',
-    'hentai'
+    'hentai',
+    'wallpaper'
 ]
 
 const commands = {}
@@ -77,11 +78,6 @@ bot.on('message', msg => {
             msg.channel.send('Comando solo disponible en canales nsfw')
         else
             command.run(msg, args, cache)
-    }
-
-    if (msg.content.startsWith('b.wallpaper')){
-        const imgUrl = pickRandom(cache.images.wallpaper)
-        msg.reply(`Aquí tienes tu wallpaper\n${imgUrl}`)
     }
 
     if (msg.content.startsWith('b.baka')){
