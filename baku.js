@@ -3,7 +3,7 @@ const bot = new Discord.Client()
 
 const fetch = require('isomorphic-fetch')
 
-const { key, ownerId } = require('./config')
+const { key } = require('./config')
 
 const baseUrl = 'http://bakubot.ddns.net'
 
@@ -47,7 +47,8 @@ const newCommands = [
     'agree',
     'sexy',
     'sexi',
-    'say'
+    'say',
+    'game'
 ]
 
 const commands = {}
@@ -75,16 +76,9 @@ bot.on('message', msg => {
         if (command.nsfw && !msg.channel.nsfw)
             msg.channel.send('Comando solo disponible en canales nsfw')
         else
-            command.run(msg, args, cache)
+            command.run(msg, args, cache, bot)
     }
 
-    if (msg.content.startsWith('b.game')) {
-        const text = String(msg.content.slice(7))
-        if (msg.author.id === ownerId)
-            bot.user.setGame(text)
-        else
-            msg.channel.send(`Comando solo disponible para mi creador <@${ownerId}>`)
-    }
     if (msg.content.startsWith('b.id'))
         msg.channel.send(`Your user id is ${msg.author.id}`)
 })
