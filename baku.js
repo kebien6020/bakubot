@@ -35,17 +35,6 @@ bot.on('ready', () => {
     Object.keys(cache.images).forEach(name => console.log(`Loaded ${cache.images[name].length} ${name} images`))
 })
 
-// function rnd(min, max) {
-//     min = Math.ceil(min)
-//     max = Math.floor(max)
-//     return Math.floor(Math.random() * (max - min)) + min
-// }
-//
-// function pickRandom(arr) {
-//     const index = rnd(0, arr.length)
-//     return arr[index]
-// }
-
 const newCommands = [
     'meme',
     'hentai',
@@ -53,7 +42,8 @@ const newCommands = [
     'hstart',
     'hstop',
     'help',
-    'baka'
+    'baka',
+    'invite'
 ]
 
 const commands = {}
@@ -84,13 +74,6 @@ bot.on('message', msg => {
             command.run(msg, args, cache)
     }
 
-    if (msg.content.startsWith('b.invite'))
-        msg.channel.send('', {
-            embed: {
-                title: 'Úneme a tu server',
-                url: `https://discordapp.com/oauth2/authorize?client_id=${appId}&scope=bot`
-            }
-        })
     if (msg.content.startsWith('b.agree'))
         msg.channel.send(`Sí, lo que ${msg.author} dijo`)
     if (msg.content.startsWith('b.sexy'))
