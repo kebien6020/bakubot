@@ -12,7 +12,8 @@ const cache = {
         'hentai': [],
         'wallpaper': [],
         'baka': [],
-    }
+    },
+    htask: {}
 }
 
 const fetchImages = type => {
@@ -48,7 +49,9 @@ function pickRandom(arr) {
 const newCommands = [
     'meme',
     'hentai',
-    'wallpaper'
+    'wallpaper',
+    'hstart',
+    'hstop'
 ]
 
 const commands = {}
