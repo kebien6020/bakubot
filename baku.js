@@ -1,5 +1,6 @@
 const Discord = require('discord.js')
 const bot = new Discord.Client()
+const fs = require('fs')
 
 const fetch = require('isomorphic-fetch')
 
@@ -30,40 +31,34 @@ const fetchImages = type => {
     'baka'
 ].forEach(fetchImages)
 
+function loadCommands(dir) {
+    const files = fs.readdirSync(dir)
+    const commands = files.map(f => require(dir + '/' + f))
+    const res = {}
+    commands.forEach(cmd => {
+        res[cmd.name] = cmd
+    })
+    return res
+}
+
+const commands = loadCommands('./commands')
+
 bot.on('ready', () => {
     console.log('Bakubot is f*king ON')
+    console.log('--- Images ---')
     Object.keys(cache.images).forEach(name => console.log(`Loaded ${cache.images[name].length} ${name} images`))
-})
-
-const newCommands = [
-    'meme',
-    'hentai',
-    'wallpaper',
-    'hstart',
-    'hstop',
-    'help',
-    'baka',
-    'invite',
-    'agree',
-    'sexy',
-    'sexi',
-    'say',
-    'game',
-    'id'
-]
-
-const commands = {}
-newCommands.forEach(cName => {
-    commands[cName] = require('./commands/' + cName)
+    console.log('--- Commands ---')
+    const commandNames = Object.keys(commands)
+    console.log(`Loaded ${commandNames.length} commands: ${commandNames.join(', ')}`)
 })
 
 function commandName(text) {
     return text.slice(2).split(' ')[0]
 }
 
-function isNewCommand(text) {
+function isCommand(text) {
     const command = commandName(text)
-    return text.startsWith('b.') && newCommands.indexOf(command) !== -1
+    return text.startsWith('b.') && command in commands
 }
 
 function parseArgs(text) {
@@ -71,7 +66,7 @@ function parseArgs(text) {
 }
 
 bot.on('message', msg => {
-    if (isNewCommand(msg.content)) {
+    if (isCommand(msg.content)) {
         const command = commands[commandName(msg.content)]
         const args = parseArgs(msg.content)
         if (command.nsfw && !msg.channel.nsfw)
