@@ -51,7 +51,8 @@ const newCommands = [
     'hentai',
     'wallpaper',
     'hstart',
-    'hstop'
+    'hstop',
+    'help'
 ]
 
 const commands = {}
@@ -87,20 +88,6 @@ bot.on('message', msg => {
         msg.channel.send(`${imgUrl}`)
     }
 
-    if (msg.content.startsWith('b.help')){
-        const helpMsg = `\`\`\`
-Comandos
-  b.help      Muestra este mensaje
-  b.wallpaper Un wallpaper
-  b.hentai    Imagen hentai (solo nsfw)
-  b.baka      B-Baka!
-  b.invite    Muestra el link para entrar a un server
-  b.say       Decir un mensaje y borrar el comando
-  b.agree     Estoy de acuerdo
-  b.sexy      Dime lo sexy que soy
-\`\`\``
-        msg.channel.send(helpMsg)
-    }
     if (msg.content.startsWith('b.invite'))
         msg.channel.send('', {
             embed: {
