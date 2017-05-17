@@ -48,7 +48,8 @@ const newCommands = [
     'sexy',
     'sexi',
     'say',
-    'game'
+    'game',
+    'id'
 ]
 
 const commands = {}
@@ -78,9 +79,6 @@ bot.on('message', msg => {
         else
             command.run(msg, args, cache, bot)
     }
-
-    if (msg.content.startsWith('b.id'))
-        msg.channel.send(`Your user id is ${msg.author.id}`)
 })
 
 bot.login(key)
