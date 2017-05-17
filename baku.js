@@ -71,7 +71,6 @@ function parseArgs(text) {
 
 bot.on('message', msg => {
     if (isNewCommand(msg.content)) {
-        console.log(commands.meme.name)
         const command = commands[commandName(msg.content)]
         const args = parseArgs(msg.content)
         if (command.nsfw && !msg.channel.nsfw)

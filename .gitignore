@@ -1,7 +1,7 @@
 /node_modules
 config.json
 config.json.deploy
-/res
+/page
 make_jsons.js
 upload.cmd
 deploy-files.txt
