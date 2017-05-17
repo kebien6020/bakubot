@@ -69,7 +69,7 @@ bot.on('message', msg => {
     if (isCommand(msg.content)) {
         const command = commands[commandName(msg.content)]
         const args = parseArgs(msg.content)
-        if (command.nsfw && !msg.channel.nsfw)
+        if (command.nsfw && !(msg.channel.nsfw || msg.channel.type === 'dm' ))
             msg.channel.send('Comando solo disponible en canales nsfw')
         else
             command.run(msg, args, cache, bot)
