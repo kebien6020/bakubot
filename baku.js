@@ -3,7 +3,7 @@ const bot = new Discord.Client()
 
 const fetch = require('isomorphic-fetch')
 
-const { key, appId, ownerId } = require('./config')
+const { key, ownerId } = require('./config')
 
 const baseUrl = 'http://bakubot.ddns.net'
 
@@ -43,7 +43,11 @@ const newCommands = [
     'hstop',
     'help',
     'baka',
-    'invite'
+    'invite',
+    'agree',
+    'sexy',
+    'sexi',
+    'say'
 ]
 
 const commands = {}
@@ -74,16 +78,6 @@ bot.on('message', msg => {
             command.run(msg, args, cache)
     }
 
-    if (msg.content.startsWith('b.agree'))
-        msg.channel.send(`Sí, lo que ${msg.author} dijo`)
-    if (msg.content.startsWith('b.sexy'))
-        msg.reply('Gracias, lo se.')
-    if (msg.content.startsWith('b.sexi'))
-        msg.reply('Es sexy con "y", pero gracias, ya sabía.')
-    if (msg.content.startsWith('b.say')) {
-        msg.channel.send(msg.content.slice(6), {tts: true})
-        if (msg.deletable) msg.delete()
-    }
     if (msg.content.startsWith('b.game')) {
         const text = String(msg.content.slice(7))
         if (msg.author.id === ownerId)
