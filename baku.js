@@ -35,16 +35,16 @@ bot.on('ready', () => {
     Object.keys(cache.images).forEach(name => console.log(`Loaded ${cache.images[name].length} ${name} images`))
 })
 
-function rnd(min, max) {
-    min = Math.ceil(min)
-    max = Math.floor(max)
-    return Math.floor(Math.random() * (max - min)) + min
-}
-
-function pickRandom(arr) {
-    const index = rnd(0, arr.length)
-    return arr[index]
-}
+// function rnd(min, max) {
+//     min = Math.ceil(min)
+//     max = Math.floor(max)
+//     return Math.floor(Math.random() * (max - min)) + min
+// }
+//
+// function pickRandom(arr) {
+//     const index = rnd(0, arr.length)
+//     return arr[index]
+// }
 
 const newCommands = [
     'meme',
@@ -52,7 +52,8 @@ const newCommands = [
     'wallpaper',
     'hstart',
     'hstop',
-    'help'
+    'help',
+    'baka'
 ]
 
 const commands = {}
@@ -81,11 +82,6 @@ bot.on('message', msg => {
             msg.channel.send('Comando solo disponible en canales nsfw')
         else
             command.run(msg, args, cache)
-    }
-
-    if (msg.content.startsWith('b.baka')){
-        const imgUrl = pickRandom(cache.images.baka)
-        msg.channel.send(`${imgUrl}`)
     }
 
     if (msg.content.startsWith('b.invite'))
