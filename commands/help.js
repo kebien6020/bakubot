@@ -3,6 +3,9 @@ Comandos
 
 b.help                  Muestra este mensaje
 b.wallpaper             Un wallpaper (que esperabas)
+b.img  [busqueda]       Busca una imagen normal en sankaku
+b.imgh [busqueda]       Busca una imagen nsfw en sankaku (solo nsfw)
+b.sankaku [busqueda]    Busqueda exacta en sankaku y solo entrega ultima imagen
 b.hentai                Imagen hentai (solo nsfw)
 b.hstart [hr|med|min]   b.hentai cada cierto tiempo (solo nsfw)
 b.hstop                 Detiene b.hstart (solo... ok ya se entiende)
