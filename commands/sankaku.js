@@ -1,4 +1,5 @@
-const sankakuLink = require('../util/sankaku_link')
+const sankakuSearch = require('../util/sankaku_search')
+const sankakuAutosuggest = require('../util/sankaku_autosuggest')
 const _async  = require('asyncawait/async')
 const _await  = require('asyncawait/await')
 
@@ -7,23 +8,25 @@ module.exports = {
     nsfw: true,
     run: _async ((msg, args) => {
         const tags = args.join('+')
-        const {img, link, suggestions} = _await (sankakuLink(tags))
-        if (suggestions) {
+        const images = _await (sankakuSearch(tags))
+        if (images.length === 0) {
+            const suggestions = _await (sankakuAutosuggest(args[0]))
             const render = sug => `${sug.tag} (${sug.qty})`
             const opts = '```\n  ' + suggestions.map(render).join('\n  ') + '```'
             msg.channel.send('Tal vez quisiste decir:\n' + opts)
             return
         }
-        msg.channel.send(link, {
+        const [ image ] = images
+        msg.channel.send(image.link, {
             embed: {
                 image: {
-                    url: img
+                    url: image.img
                 },
                 footer: {
                     text: 'Desde sankakucomplex',
                     'icon_url': 'https://images.sankakucomplex.com/gfx/favicon.png'
                 },
-                url: link
+                url: images.link
             }
         })
     })
