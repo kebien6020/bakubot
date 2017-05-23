@@ -14,7 +14,8 @@ const cache = {
         'wallpaper': [],
         'baka': [],
     },
-    htask: {}
+    htask: {},
+    sankaku: {},
 }
 
 const fetchImages = type => {
