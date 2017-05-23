@@ -2,6 +2,8 @@ const sankakuSearch = require('../util/sankaku_search')
 const makeEmbed = require('../util/sankaku_make_embed')
 const { async: _async, await: _await } = require('asyncawait')
 
+const CACHE_SIZE = 100
+
 module.exports = {
     name: 'next',
     run: _async ((msg, _, cache) => {
@@ -17,11 +19,17 @@ module.exports = {
 
         // Cache some images if they havent been cached
         if (!scache.hasOwnProperty('images'))
-            scache.images = _await(sankakuSearch(scache.search, 100))
+            scache.images = _await(sankakuSearch(scache.search, CACHE_SIZE))
 
 
         // Update and get the currentImg
         const index = ++scache.currentImg
+
+        // Check if the index overflows, if so cache more images
+        if (index >= scache.images.length) {
+            const moreImages = _await(sankakuSearch(scache.search, CACHE_SIZE, ++scache.currentPage))
+            scache.images = scache.images.concat(moreImages)
+        }
         const image = scache.images[index]
 
         // Edit the previous message if it still exists

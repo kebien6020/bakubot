@@ -29,6 +29,7 @@ module.exports = {
         cache.sankaku[cacheId] = {
             search: tags,
             currentImg: 0,
+            currentPage: 1,
             message: thisMessage,
         }
     })
