@@ -5,3 +5,4 @@ config.json.deploy
 make_jsons.js
 upload.cmd
 deploy-files.txt
+db.sqlite
