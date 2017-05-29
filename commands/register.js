@@ -6,9 +6,14 @@ const { OsuUser } = require('../db/models')
 module.exports = {
     name: 'register',
     run: _async((msg, args) => {
+        const hasMention = msg.mentions.users.size > 0
+
+        const discordId = hasMention ? msg.mentions.users.first().id : msg.author.id
+        let osuName = args.join(' ')
+        if (hasMention)
+            osuName = osuName.replace(/<@.*>/gi, '').trim() // remove the mention
         // Check the user against the osu-api
         // Also get its id since we want to store the id in the db
-        const osuName = args.join(' ')
         let osuUser = null
         try {
             osuUser = _await (osu.getUser({u: osuName}))
@@ -18,7 +23,6 @@ module.exports = {
         }
 
         const osuId = osuUser.id
-        const discordId = msg.author.id
 
         // Check if the user has already an username associated
         try {

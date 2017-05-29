@@ -1,8 +1,8 @@
 /node_modules
-config.json
-config.json.deploy
+/config.json
+/config.json.deploy
 /page
-make_jsons.js
-upload.cmd
-deploy-files.txt
-db.sqlite
+/make_jsons.js
+/upload.cmd
+/deploy-files.txt
+/db.sqlite
