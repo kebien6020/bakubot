@@ -5,6 +5,7 @@ const osu = require('../util/osu_api')
 const players = require('../util/osu_players')
 const { OsuUser } = require('../db/models')
 const TIMEOUT = 5000 // 5 sec
+const HARD_TIMEOUT = 30000 // 30sec
 
 const modes = {
     'osu': 0,
@@ -67,12 +68,14 @@ const editOrNew = (msg, content, opts) => {
         return msg.channel.send(content, opts)
 }
 
-const downloadScores = (victims, mode) => {
+const downloadScores = (victims, mode, minPP) => {
     const scores = []
     const timeout = TIMEOUT
     const startTime = Date.now()
     for (const victim of victims) {
-        if (Date.now() - startTime > timeout) break
+        if (Date.now() - startTime > timeout && scores.length >= 10) break
+        // TODO: throw error, notify user that he should use a higher target rank
+        if (Date.now() - startTime > HARD_TIMEOUT) break
         let victimScores = null
         try {
             victimScores = _await (osu.getUserBest({u: victim.osuId, type: 'id', m: mode, limit: 50}))
@@ -81,10 +84,12 @@ const downloadScores = (victims, mode) => {
             continue
         }
         // Include victim object inside of each score
-        const scoresWithVictims = victimScores.map(score => {
-            score.victim = victim
-            return score
-        })
+        const scoresWithVictims = victimScores
+            .filter(score => Number(score.pp) >= minPP)
+            .map(score => {
+                score.victim = victim
+                return score
+            })
         Array.prototype.push.apply(scores, scoresWithVictims)
     }
     return scores
@@ -262,7 +267,7 @@ module.exports = {
         const botMsg = _await(msg.channel.send(`Obteniendo top ranks de las víctimas (${TIMEOUT/1000} segundos) ...`))
         let allScores = null
         try {
-            allScores = _await(downloadScores(victims, mode))
+            allScores = _await(downloadScores(victims, mode, minPP))
         } catch (err) {
             editOrNew(botMsg, 'Error tratando de obtener puntajes de las víctimas: ' + err)
             return
