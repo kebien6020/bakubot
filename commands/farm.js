@@ -68,7 +68,21 @@ const editOrNew = (msg, content, opts) => {
         return msg.channel.send(content, opts)
 }
 
-const downloadScores = (victims, mode, minPP) => {
+// Taken from object entries polyfill
+const reduce = Function.bind.call(Function.call, Array.prototype.reduce)
+const isEnumerable = Function.bind.call(Function.call, Object.prototype.propertyIsEnumerable)
+const concat = Function.bind.call(Function.call, Array.prototype.concat)
+const keys = Reflect.ownKeys
+const objEntries = obj =>
+    reduce(keys(obj), (e, k) => concat(e, typeof k === 'string' && isEnumerable(obj, k) ? [[k, obj[k]]] : []), [])
+
+const contains = (str, sub) => str.indexOf(sub) !== -1
+
+const hasMods = (score, mods) => {
+    return mods.every(mod => contains(score.mods, mod))
+}
+
+const downloadScores = (victims, mode, minPP, mods) => {
     const scores = []
     const timeout = TIMEOUT
     const startTime = Date.now()
@@ -86,6 +100,7 @@ const downloadScores = (victims, mode, minPP) => {
         // Include victim object inside of each score
         const scoresWithVictims = victimScores
             .filter(score => Number(score.pp) >= minPP)
+            .filter(score => hasMods(score, mods))
             .map(score => {
                 score.victim = victim
                 return score
@@ -153,7 +168,6 @@ const modList = {
     'HardRock': 'HR',
     'DoubleTime': 'DT',
     'HalfTime': 'HT',
-    'Nightcore': 'NC',
     'FlashLight': 'FL',
     'Perfect': 'PF',
     'FadeIn': 'FI',
@@ -171,7 +185,7 @@ const renderScore = (score, mode) => {
     const acc = scoreAcc(score, mode).toFixed(2)
     const { beatmap } = score
     return pp + 'pp | '
-         + score.rank + ' | '
+         + score.rank.replace(/X/g, 'SS') + ' | '
          + acc + '% | '
          + 'x' + score.maxCombo + ' | '
          + formatMods(score.mods) + ' | '
@@ -194,11 +208,23 @@ module.exports = {
     name: 'farm',
     run: _async((msg, args) => {
         // Parse the arguments
-        const opts = argsParser(args)
-        const localOpt = Boolean(opts.local || opts.l)
-        const ppOpt = opts.pp !== undefined ? opts.pp : (opts.p !== undefined ? opts.p : false)
-        const modeOpt = opts.mode !== undefined ? opts.mode : (opts.m !== undefined ? opts.m : false)
-        const rankOpt = opts.rank !== undefined ? opts.mode : (opts.r !== undefined ? opts.r : false)
+        const opts = argsParser(args, {
+            'boolean': ['local'],
+            'string': ['mode'],
+            'alias': {
+                'l': 'local',
+                'p': 'pp',
+                'm': 'mode',
+                'r': 'rank'
+            }
+        })
+        const localOpt = opts.local
+        const ppOpt = opts.pp !== undefined ? opts.pp : false
+        const modeOpt = opts.mode !== undefined ? opts.mode : false
+        const rankOpt = opts.rank !== undefined ? opts.rank : false
+        const modsOpt = opts.hasOwnProperty('_')
+                      ? opts['_'].join('').replace(/\+/g, '').toLowerCase()
+                      : false
 
         // Query the osu id from the db
         const discordId = msg.author.id
@@ -261,27 +287,36 @@ module.exports = {
             initialMessage += `Victimas: gente con rank #${minRank} o mejor`
             victims = getUsersFromRank(minRank, players[modeName])
         }
+
+        // Mods
+        let askedMods = []
+        if (modsOpt) {
+            askedMods =
+                objEntries(modList)
+                .map(([key, val]) =>
+                    contains(modsOpt, key.toLowerCase()) || contains(modsOpt, val.toLowerCase())
+                  ? key
+                  : false)
+                .filter(mod => mod)
+            initialMessage += '\nMods: ' + askedMods.join(', ')
+        }
         msg.channel.send(initialMessage)
 
         // Get top ranks of victims
         const botMsg = _await(msg.channel.send(`Obteniendo top ranks de las víctimas (${TIMEOUT/1000} segundos) ...`))
         let allScores = null
         try {
-            allScores = _await(downloadScores(victims, mode, minPP))
+            allScores = _await(downloadScores(victims, mode, minPP, askedMods))
         } catch (err) {
             editOrNew(botMsg, 'Error tratando de obtener puntajes de las víctimas: ' + err)
             return
         }
 
-        // Filter by min pp
-        editOrNew(botMsg, 'Procesando top ranks...')
-        const filteredScores = allScores.filter(score => Number(score.pp) >= minPP)
-
         // Sort by pp I guess, ascendent
         // TODO: add a sorting option
-        const sortedScores = filteredScores.sort((a, b) => Number(a.pp) - Number(b.pp))
+        const sortedScores = allScores.sort((a, b) => Number(a.pp) - Number(b.pp))
 
-        // Recommend only the first 20
+        // Recommend only the first 10
         const finalScores = sortedScores.slice(0, 10)
 
         // Download beatmap information for each score
