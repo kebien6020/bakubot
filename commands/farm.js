@@ -78,7 +78,20 @@ const objEntries = obj =>
 
 const contains = (str, sub) => str.indexOf(sub) !== -1
 
+const modList = {
+    'Easy': 'EZ',
+    'Hidden': 'HD',
+    'HardRock': 'HR',
+    'DoubleTime': 'DT',
+    'HalfTime': 'HT',
+    'FlashLight': 'FL',
+    'Perfect': 'PF',
+    'FadeIn': 'FI',
+    'Random': 'RD',
+}
+
 const hasMods = (score, mods) => {
+    if (mods[0] === 'NoMod') return score.mods.filter(m => m in modList).length === 0
     return mods.every(mod => contains(score.mods, mod))
 }
 
@@ -162,18 +175,6 @@ const formatTime = seconds => {
     return res
 }
 
-const modList = {
-    'Easy': 'EZ',
-    'Hidden': 'HD',
-    'HardRock': 'HR',
-    'DoubleTime': 'DT',
-    'HalfTime': 'HT',
-    'FlashLight': 'FL',
-    'Perfect': 'PF',
-    'FadeIn': 'FI',
-    'Random': 'RD',
-}
-
 const formatMods = mods => {
     if (mods.length === 0)
         return 'NoMod'
@@ -188,7 +189,7 @@ const renderScore = (score, mode) => {
          + score.rank.replace(/X/g, 'SS') + ' | '
          + acc + '% | '
          + 'x' + score.maxCombo + ' | '
-         + formatMods(score.mods) + ' | '
+         + formatMods(score.mods.filter(m => m in modList)) + ' | '
          + `[${beatmap.artist} - ${beatmap.title} [${beatmap.version}]](${beatmapUrl(beatmap.id)}) | `
          + formatTime(Number(beatmap.time.drain)) + ' | '
          + score.victim.toString()
@@ -224,6 +225,8 @@ module.exports = {
         const rankOpt = opts.rank !== undefined ? opts.rank : false
         if (opts['_'] && opts['_'][0].toUpperCase() === opts['_'][0])
             opts['_'] = opts['_'][0].match(/.{1,2}/g)
+        if (opts['_'] && opts['_'][0].toLowerCase() === 'nomod')
+            opts['_'] = ['nomod']
         const modsOpt = opts.hasOwnProperty('_')
                       ? opts['_'].join(':').replace(/\+/g, '').toLowerCase().split(':')
                       : false
@@ -299,6 +302,8 @@ module.exports = {
                   ? key
                   : false)
                 .filter(mod => mod)
+            if (modsOpt[0] === 'nomod')
+                askedMods = ['NoMod']
             initialMessage += '\nMods: ' + askedMods.join(', ')
         }
         msg.channel.send(initialMessage)
