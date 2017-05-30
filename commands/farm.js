@@ -223,9 +223,9 @@ module.exports = {
         const ppOpt = opts.pp !== undefined ? opts.pp : false
         const modeOpt = opts.mode !== undefined ? opts.mode : false
         const rankOpt = opts.rank !== undefined ? opts.rank : false
-        if (opts['_'] && opts['_'][0].toUpperCase() === opts['_'][0])
+        if (opts['_'][0] && opts['_'][0].toUpperCase() === opts['_'][0])
             opts['_'] = opts['_'][0].match(/.{1,2}/g)
-        if (opts['_'] && opts['_'][0].toLowerCase() === 'nomod')
+        if (opts['_'][0] && opts['_'][0].toLowerCase() === 'nomod')
             opts['_'] = ['nomod']
         const modsOpt = opts.hasOwnProperty('_')
                       ? opts['_'].join(':').replace(/\+/g, '').toLowerCase().split(':')
@@ -277,7 +277,7 @@ module.exports = {
         if (rankOpt)
             minRank = rankOpt
         else
-            minRank = Number(osuUser.pp.rank) - 1
+            minRank = Math.floor(Number(osuUser.pp.rank) * 0.9)
 
         // Let the user know what we're up to
         let initialMessage = `Modo: ${modeName}\nMinimo pp: ${minPP.toFixed()}pp\n`
