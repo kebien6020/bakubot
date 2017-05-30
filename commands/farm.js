@@ -205,6 +205,18 @@ const renderScores = (scores, mode) => {
 
 }
 
+const parseMods = (args) => {
+    const isAllUpper = str => str.toUpperCase() === str
+    const chunk2 = str => str.match(/.{1,2}/g)
+    const removePlus = str => str.replace(/\+/g, '')
+    const lower = str => str.toLowerCase()
+
+    if (args === undefined || args.length === 0) return false
+    if (args[0] === 'nomod') return 'nomod'
+    if (isAllUpper(args[0])) return chunk2(removePlus(args[0])).map(lower)
+    return args.map(removePlus).map(lower)
+}
+
 module.exports = {
     name: 'farm',
     run: _async((msg, args) => {
@@ -223,13 +235,7 @@ module.exports = {
         const ppOpt = opts.pp !== undefined ? opts.pp : false
         const modeOpt = opts.mode !== undefined ? opts.mode : false
         const rankOpt = opts.rank !== undefined ? opts.rank : false
-        if (opts['_'][0] && opts['_'][0].toUpperCase() === opts['_'][0])
-            opts['_'] = opts['_'][0].match(/.{1,2}/g)
-        if (opts['_'][0] && opts['_'][0].toLowerCase() === 'nomod')
-            opts['_'] = ['nomod']
-        const modsOpt = opts.hasOwnProperty('_')
-                      ? opts['_'].join(':').replace(/\+/g, '').toLowerCase().split(':')
-                      : false
+        const modsOpt = parseMods(opts['_'])
         // Query the osu id from the db
         const discordId = msg.author.id
         let osuId = null
@@ -302,7 +308,7 @@ module.exports = {
                   ? key
                   : false)
                 .filter(mod => mod)
-            if (modsOpt[0] === 'nomod')
+            if (modsOpt === 'nomod')
                 askedMods = ['NoMod']
             initialMessage += '\nMods: ' + askedMods.join(', ')
         }
