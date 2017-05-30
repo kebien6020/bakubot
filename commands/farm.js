@@ -222,10 +222,11 @@ module.exports = {
         const ppOpt = opts.pp !== undefined ? opts.pp : false
         const modeOpt = opts.mode !== undefined ? opts.mode : false
         const rankOpt = opts.rank !== undefined ? opts.rank : false
+        if (opts['_'] && opts['_'][0].toUpperCase() === opts['_'][0])
+            opts['_'] = opts['_'][0].match(/.{1,2}/g)
         const modsOpt = opts.hasOwnProperty('_')
-                      ? opts['_'].join('').replace(/\+/g, '').toLowerCase()
+                      ? opts['_'].join(':').replace(/\+/g, '').toLowerCase().split(':')
                       : false
-
         // Query the osu id from the db
         const discordId = msg.author.id
         let osuId = null
