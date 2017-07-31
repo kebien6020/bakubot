@@ -18,13 +18,13 @@ function renderResult(result) {
 module.exports = {
     name: 'osunames',
     run: _async((msg) => {
-        // const memberIds = msg.guild.members.map(m => m.id)
+        const memberIds = msg.guild.members.map(m => m.id)
 
         let osuUsers = null
         try {
             osuUsers = _await (OsuUser.findAll({
                 where: {
-                    // discordId: memberIds    // WHERE discordId IN (list)
+                    discordId: memberIds    // WHERE discordId IN (list)
                 }
             }))
         } catch (err) {
