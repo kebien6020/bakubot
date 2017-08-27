@@ -278,7 +278,7 @@ module.exports = {
                 return
             }
 
-        // Min tank to look for
+        // Min rank to look for
         let minRank = null
         if (rankOpt)
             minRank = rankOpt
@@ -348,7 +348,7 @@ module.exports = {
         try {
             for (const score of finalScores) {
                 if (score.victim.discordName) continue
-                const user = _await (osu.getUser({u: score.victim.osuId, type: 'id'}))
+                const user = _await (osu.getUser({u: score.victim.osuId, m: mode, type: 'id'}))
                 score.victim.osuName = user.name
                 score.victim.rank = user.pp.rank
             }
