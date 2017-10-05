@@ -17,6 +17,8 @@ b.invite                Muestra el link para entrar a un server
 b.say                   Decir un mensaje y borrar el comando
 b.agree                 Estoy de acuerdo
 b.sexy                  Dime lo sexy que soy
+b.stalk                 Muestra mensajes borrados o editados en el canal actual
+b.unstalk               Detiene stalkeo en el canal actual
 \`\`\``
 
 module.exports = {

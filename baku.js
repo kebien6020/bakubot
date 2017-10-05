@@ -81,4 +81,20 @@ bot.on('message', msg => {
         levels(msg)
 })
 
+bot.on('messageDelete', msg => {
+    if (cache.stalking.indexOf(msg.channel.id) !== -1)
+        msg.channel.send(`Mensaje eliminado de ${msg.author}:\n`
+            +'```' + msg.content + '```'
+        )
+})
+
+bot.on('messageUpdate', (oldMsg, newMsg) => {
+    const channel = oldMsg.channel
+    if (cache.stalking.indexOf(channel.id) !== -1)
+        channel.send(`Mensaje editado de ${oldMsg.author}\n`
+            + '```Antes  : ' + oldMsg.content + '```\n'
+            + '```Despues: ' + newMsg.content + '```\n'
+        )
+})
+
 bot.login(key)
