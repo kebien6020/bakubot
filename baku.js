@@ -1,6 +1,7 @@
 const Discord = require('discord.js')
 const bot = new Discord.Client()
 const fs = require('fs')
+const levels = require('./special/levels')
 
 const fetch = require('isomorphic-fetch')
 
@@ -16,6 +17,7 @@ const cache = {
     },
     htask: {},
     sankaku: {},
+    stalking: [],
 }
 
 const fetchImages = type => {
@@ -75,6 +77,8 @@ bot.on('message', msg => {
         else
             command.run(msg, args, cache, bot)
     }
+    if (!msg.author.bot)
+        levels(msg)
 })
 
 bot.login(key)
